@@ -8,4 +8,4 @@ from frappe.model.document import Document
 from frappe.utils.nestedset import NestedSet
 
 class ForumCategory(NestedSet):
-     pass
+     nsm_parent_field = 'parent_forum_category'
