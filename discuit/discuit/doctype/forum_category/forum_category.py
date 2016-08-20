@@ -5,6 +5,7 @@
 from __future__ import unicode_literals
 import frappe
 from frappe.model.document import Document
+from frappe.utils.nestedset import NestedSet
 
-class ForumCategory(Document):
-	pass
+class ForumCategory(NestedSet):
+     nsm_parent_field = 'parent_forum_category'
