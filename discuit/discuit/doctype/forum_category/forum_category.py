@@ -7,4 +7,5 @@ import frappe
 from frappe.model.document import Document
 
 class ForumCategory(Document):
-	pass
+	def validate(self):
+		self.category_slug = self.category_name.lower().replace(" ", "_")
