@@ -6,3 +6,10 @@ frappe.ui.form.on('Forum Category', {
 
 	}
 });
+
+frappe.ui.form.on("Forum Category", "onload_post_render", function(frm) {
+  frappe.require('assets/frappe/js/lib/jscolor/jscolor.js', function() {
+    $(frm.fields_dict["category_color"].input).addClass('color {required:false,hash:true}');
+    jscolor.bind();
+  });
+});
