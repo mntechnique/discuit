@@ -22,11 +22,11 @@
   <div class="col-md-1 hidden-sm hidden-xs">Activity</div>
 </div>
 <hr>
-{{ threads}}
+
 {% for thread in threads %}
 <div class="row">
   <div class="col-md-10">
-    <h4>{{ thread.th_thread_title }}</h4>
+    <h4>{{ thread.thread_title }}</h4>
     <ul class="list-inline">
       <li class="list-inline-item">
         <div class="label label-info">FIPS</div>
@@ -52,7 +52,6 @@
 <hr>
 {% endfor %}
 <script type="text/javascript">
-  frappe.ready(function() {
-    $().
+  frappe.ready(function() { 
   });
 </script>
