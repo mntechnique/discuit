@@ -2,7 +2,7 @@
 <div class="row">
   <div class="col-md-2">
     <div class="form-group">
-      <a class="btn btn-block btn-primary">New</a>
+      <a class="btn btn-block btn-primary" data-toggle ="collapse" data-target="#newthreads">New</a>
     </div>
   </div>
   <div class="col-md-10">
@@ -16,13 +16,35 @@
     </div>
   </div>
 </div>
+<div class="row collapse" id="newthreads">
+  <div class="col-md-12">
+    <div class="form">
+        <div class="form-group">
+              <input id="new-thread-title" class="form-control" type="text" placeholder="Enter Title text for thread...">
+        </div>
+        <div class="form-group">
+              <input id="new-thread-categories" class="form-control" type="text" placeholder="Enter Categories (Tags)">
+        </div>
+        <div class="form-group text-right">
+          <ul class="list-inline">
+            <li>
+              <a class="btn btn-default" id="create-thread">Save</a>
+            </li>
+            <li>
+              <a class="btn btn-default" data-toggle ="collapse" data-target="#newthreads">Cancel</a>
+            </li>
+          </ul>
+        </div>
+    </div>
+  </div>
+</div> 
 <div class="row">
   <div class="col-md-10 hidden-sm hidden-xs">Threads</div>
   <div class="col-md-1 hidden-sm hidden-xs">Replies</div>
   <div class="col-md-1 hidden-sm hidden-xs">Activity</div>
 </div>
 <hr>
-
+<!-- {{ threads}} -->
 {% for thread in threads %}
 <div class="row">
   <div class="col-md-10">
@@ -51,7 +73,63 @@
 </div>
 <hr>
 {% endfor %}
+{% macro render_thread(thread, rowindex) %}
+  <div class="row">
+    <div class="col-xs-12">
+      <h3> 
+          <span>
+            {{ rowindex|string + '. ' }}<span id="{{ thread.name + '-title' }}">{{ thread.th_thread_title  }}
+          </span> 
+        
+      </h3>
+    </div>
+{% endmacro %}
+<div id="threads">
+  {% set threadindex = 0 %}
+  {% for thread in project_threads %}
+      {% set threadindex = threadindex + 1 %}
+      {{ render_thread(thread, threadindex) }}
+  {% endfor %}
+  {% if not project_threads %}
+    <br>
+    <div class="text-center text-muted">
+      <h4>No threads have been created for this project yet.</h4>
+      <i class="mega-octicon octicon-telescope"></i>
+    </div>
+  {% endif %}
+</div>
+
 <script type="text/javascript">
-  frappe.ready(function() { 
+  frappe.ready(function(){
+    $('#create-thread').click(function(event){
+      var title = $('#new-thread-title').val();
+      var categories = $('#new-thread-categories').val();
+
+      frappe.call({
+        method: "discuit.www.threads.create_thread",
+        args: {
+            "thread_title": title,
+            "thread_categories": categories
+        },
+        freeze: true,
+        freeze_message: __("Creating thread..."),
+        callback: function(r){
+          if(!r.exc) {
+            //frappe.msgprint(__(r.message));
+            //refresh_threads();
+
+            //$('#newthread').removeClass('in'); //to collapse container.collapse();
+
+            $('#threads').fadeOut();
+            $('#threads').load(document.URL +  ' #threads', function() {
+              $('#threads').fadeIn();
+            });
+          } else {
+            frappe.msgprint(__("Thread was not created. <br /> " + r.exc));
+          }
+        }
+      });
+    });
   });
+  
 </script>
