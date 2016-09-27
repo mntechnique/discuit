@@ -1,5 +1,6 @@
 # GPL v3 - MN Technique and contributors
 import frappe
+from frappe import database
 
 def get_context(context):
 	thr = frappe.get_all("Thread", fields=["name", "th_thread_title"])
@@ -15,22 +16,20 @@ def get_context(context):
 	return context
 
 @frappe.whitelist()
-def create_thread(th_thread_title, th_categories):
-     #return "Thread Added: {p}; {tt}; {fc}".format(p=project, tt=thread_title, fc=thread_categories)
-     threads = frappe.new_doc('Thread')
-     threads.th_thread_title = thread_title
-     threads.th_categories = thread_categories
-     threads.th_status = "Open"
-     threads.insert()
+def create_thread(thread_title, thread_categories):
+     thread = frappe.new_doc('Thread')
+     thread.th_thread_title = thread_title
+     thread.th_categories = thread_categories
+     thread.th_status = "Open"
+     thread.save()
      frappe.db.commit()
      
      return "Thread {tid} added.".format(tid=thread.name)
 
 @frappe.whitelist()
 def save_thread(th_thread_title, th_categories):
-     #return "Thread Edited: {t}; {tt}; {fc}".format(t=thread_id, tt=thread_title, fc=thread_categories)
-     threads = frappe.get_doc('Thread', th_thread_title)
-     threads.th_thread_title = thread_title
-     threads.th_categories = thread_categories
-     threads.save()
+     thread = frappe.get_doc('Thread', th_thread_title)
+     thread.th_thread_title = thread_title
+     thread.th_categories = thread_categories
+     thread.save()
      frappe.db.commit()

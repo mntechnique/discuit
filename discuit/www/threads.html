@@ -1,4 +1,5 @@
-
+{% extends "templates/web.html" %}
+{% block page_content %}
 <div class="row">
   <div class="col-md-2">
     <div class="form-group">
@@ -28,10 +29,10 @@
         <div class="form-group text-right">
           <ul class="list-inline">
             <li>
-              <a class="btn btn-default" id="create-thread">Save</a>
+              <a class="btn btn-default" id="create-thread" data-role="save-thread" data-thread-key="btnsave">Save</a>
             </li>
             <li>
-              <a class="btn btn-default" data-toggle ="collapse" data-target="#newthreads">Cancel</a>
+              <a class="btn btn-default" id="cancel-thread" data-toggle ="collapse" data-target="#newthreads">Cancel</a>
             </li>
           </ul>
         </div>
@@ -44,92 +45,129 @@
   <div class="col-md-1 hidden-sm hidden-xs">Activity</div>
 </div>
 <hr>
-<!-- {{ threads}} -->
-{% for thread in threads %}
-<div class="row">
-  <div class="col-md-10">
-    <h4>{{ thread.thread_title }}</h4>
-    <ul class="list-inline">
-      <li class="list-inline-item">
-        <div class="label label-info">FIPS</div>
-      </li>
-      <li class="list-inline-item">
-        <div class="label label-info">FIPS 140</div>
-      </li>
-    </ul>
-  </div>
-  <div class="col-md-1 col-xs-6">
-    <div class="hidden-md hidden-lg">
-      <strong>Replies</strong>
-    </div>
-    <div>{{ thread.post_count }}</div>
-  </div>
-  <div class="col-md-1 col-xs-6 text-right">
-    <div class="hidden-md hidden-lg">
-      <strong>Activity</strong>
-    </div>
-    <div>{{ "3H" }}</div>
-  </div>
-</div>
-<hr>
-{% endfor %}
+
 {% macro render_thread(thread, rowindex) %}
-  <div class="row">
-    <div class="col-xs-12">
-      <h3> 
-          <span>
-            {{ rowindex|string + '. ' }}<span id="{{ thread.name + '-title' }}">{{ thread.th_thread_title  }}
-          </span> 
-        
-      </h3>
+    <div class="row">
+      <div class="col-md-10">
+        <h4>{{ thread.thread_title }}</h4>
+        <ul class="list-inline">
+          <li class="list-inline-item">
+            <div class="label label-info">FIPS</div>
+          </li>
+          <li class="list-inline-item">
+            <div class="label label-info">FIPS 140</div>
+          </li>
+        </ul>
+      </div>
+      <div class="col-md-1 col-xs-6">
+        <div class="hidden-md hidden-lg">
+          <strong>Replies</strong>
+        </div>
+        <div>{{ thread.post_count }}</div>
+      </div>
+      <div class="col-md-1 col-xs-6 text-right">
+        <div class="hidden-md hidden-lg">
+          <strong>Activity</strong>
+        </div>
+        <div>{{ "3H" }}</div>
+      </div>
     </div>
+    <hr>    
 {% endmacro %}
-<div id="threads">
-  {% set threadindex = 0 %}
-  {% for thread in project_threads %}
-      {% set threadindex = threadindex + 1 %}
-      {{ render_thread(thread, threadindex) }}
+
+<div id="threads-outer">
+  <div id="threads">
+  <!-- {{ threads }} -->
+  {% for t in threads %}
+    {{ render_thread(t, 0) }}
   {% endfor %}
-  {% if not project_threads %}
-    <br>
-    <div class="text-center text-muted">
-      <h4>No threads have been created for this project yet.</h4>
-      <i class="mega-octicon octicon-telescope"></i>
-    </div>
-  {% endif %}
+  </div>
 </div>
+
 
 <script type="text/javascript">
   frappe.ready(function(){
-    $('#create-thread').click(function(event){
-      var title = $('#new-thread-title').val();
-      var categories = $('#new-thread-categories').val();
-
-      frappe.call({
-        method: "discuit.www.threads.create_thread",
-        args: {
-            "thread_title": title,
-            "thread_categories": categories
-        },
-        freeze: true,
-        freeze_message: __("Creating thread..."),
-        callback: function(r){
-          if(!r.exc) {
-            //frappe.msgprint(__(r.message));
-            //refresh_threads();
-
-            //$('#newthread').removeClass('in'); //to collapse container.collapse();
-
-            $('#threads').fadeOut();
-            $('#threads').load(document.URL +  ' #threads', function() {
-              $('#threads').fadeIn();
-            });
-          } else {
-            frappe.msgprint(__("Thread was not created. <br /> " + r.exc));
-          }
+    function toggle_listcontrols_save_thread(threadname, editmode) {
+      var th_save = $('#' + threadname + '-save-thread');
+      var th_cancel = $('#' + threadname + '-cancel-thread');
+        if(editmode == 1) {
+          th_save.removeClass('hide'); 
+          th_cancel.removeClass('hide');
+        } 
+        else {
+          th_save.addClass('hide'); 
+          th_cancel.addClass('hide');
         }
+    }
+      
+    $('#create-thread').click(function(event){
+        var title = $('#new-thread-title');
+        var categories = $('#new-thread-categories');
+        // console.log(title);
+        // console.log(categories);
+        frappe.call({
+          method: "discuit.www.threads.create_thread",
+          args: {
+              "thread_title": title.val(),
+              "thread_categories": categories.val()
+          },
+          freeze: true,
+          freeze_message: __("Creating thread..."),
+          callback: function(r){
+            if(!r.exc) {
+              //frappe.msgprint(__(r.message));
+              //refresh_threads();
+
+              //$('#newthread').removeClass('in'); //to collapse container.collapse();
+              // title.val(''); 
+              // title.addClass('hide');
+              // categories.val(''); 
+              // categories.addClass('hide');
+              //toggle_listcontrols_save_thread(threadname, 0);
+              $('#threads-outer #threads').fadeOut();
+              $('#threads-outer #threads').parent().load(document.URL + ' #threads-outer #threads', function(){
+                $('#threads-outer #threads').fadeIn();
+              });
+            } else {
+              frappe.msgprint(__("Thread was not created. <br /> " + r.exc));
+            }
+          }
+        });
       });
-    });
+    // $('#threads').on('click', '[data-role="save-thread"]', function() {
+    //   var threadname = $(this).attr('data-thread-key'); //Get context of Thread.
+    //   var input_title = $('#' + threadname + '-new-thread-title');
+    //   var input_categories = $('#' + threadname + '-new-thread-categories');
+
+    //   frappe.call({
+    //     method: "discuit.www.threads.save_thread",
+    //     args: {
+    //         "thread_title": input_title.val(),
+    //         "thread_categories": input_categories.val()
+    //     },
+    //     freeze: true,
+    //     freeze_message: __("Save thread..."),
+    //     callback: function(r){
+    //       if(!r.exc) {
+    //         input_title.val(''); 
+    //         input_title.addClass('hide');
+    //         input_categories.val(''); 
+    //         input_categories.addClass('hide');
+    //         toggle_listcontrols_save_thread(threadname, 0);
+          
+    //         //refresh_threads();
+    //         $('#threads #' + threadname + '-new-thread-title').fadeOut();
+    //         $('#threads #' + threadname + '-new-thread-title').load(document.URL +  '#threads #' + threadname + '-new-thread-title', function() {
+    //           $('#threads #' + threadname + '-new-thread-title').fadeIn();
+    //         });
+    //         //location.reload();
+    //       } else {
+    //         frappe.msgprint(__("Thread was not save. <br /> " + r.exc));
+    //       }
+    //     }
+    //   }); 
+    // });
   });
-  
+
 </script>
+{% endblock %}
