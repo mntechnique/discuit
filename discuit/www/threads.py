@@ -11,5 +11,5 @@ def get_context(context):
 			"thread_title": i.th_thread_title
 		})
 	context.threads = thread_post_count
-	context.nocache = 1
+	context.no_cache = 1
 	return context
