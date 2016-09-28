@@ -12,7 +12,7 @@ def get_context(context):
 			"thread_title": i.th_thread_title
 		})
 	context.threads = thread_post_count
-	context.nocache = 1
+	context.no_cache = 1
 	return context
 
 @frappe.whitelist()
@@ -21,6 +21,7 @@ def create_thread(thread_title, thread_categories):
      thread.th_thread_title = thread_title
      thread.th_categories = thread_categories
      thread.th_status = "Open"
+     thread.insert()
      thread.save()
      frappe.db.commit()
      

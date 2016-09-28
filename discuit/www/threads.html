@@ -3,7 +3,7 @@
 <div class="row">
   <div class="col-md-2">
     <div class="form-group">
-      <a class="btn btn-block btn-primary" data-toggle ="collapse" data-target="#newthreads">New</a>
+      <a class="btn btn-block btn-primary" data-toggle ="collapse" data-target="#newthread">New</a>
     </div>
   </div>
   <div class="col-md-10">
@@ -17,7 +17,7 @@
     </div>
   </div>
 </div>
-<div class="row collapse" id="newthreads">
+<div class="row collapse" id="newthread">
   <div class="col-md-12">
     <div class="form">
         <div class="form-group">
@@ -32,7 +32,7 @@
               <a class="btn btn-default" id="create-thread" data-role="save-thread" data-thread-key="btnsave">Save</a>
             </li>
             <li>
-              <a class="btn btn-default" id="cancel-thread" data-toggle ="collapse" data-target="#newthreads">Cancel</a>
+              <a class="btn btn-default" id="cancel-thread" data-toggle ="collapse" data-target="#newthread">Cancel</a>
             </li>
           </ul>
         </div>
@@ -75,7 +75,7 @@
     <hr>    
 {% endmacro %}
 
-<div id="threads-outer">
+<div id="threads-parent">
   <div id="threads">
   <!-- {{ threads }} -->
   {% for t in threads %}
@@ -87,6 +87,15 @@
 
 <script type="text/javascript">
   frappe.ready(function(){
+
+    function wireup_datepickers() {
+      $("[data-fieldtype='Date']").each(function() {
+        mnt.init_datepicker($(this));
+      });
+    }
+
+    wireup_datepickers();
+    
     function toggle_listcontrols_save_thread(threadname, editmode) {
       var th_save = $('#' + threadname + '-save-thread');
       var th_cancel = $('#' + threadname + '-cancel-thread');
@@ -118,16 +127,20 @@
               //frappe.msgprint(__(r.message));
               //refresh_threads();
 
-              //$('#newthread').removeClass('in'); //to collapse container.collapse();
+              $('#newthread').removeClass('in'); //to collapse container.collapse();
+              mnt.refresh_page_element('#threads-parent #threads', 1, function() {
+                wireup_datepickers();
+              });
+              mnt.show_alert(__("New thread " + title + " added."), 5)
               // title.val(''); 
               // title.addClass('hide');
               // categories.val(''); 
               // categories.addClass('hide');
-              //toggle_listcontrols_save_thread(threadname, 0);
-              $('#threads-outer #threads').fadeOut();
-              $('#threads-outer #threads').parent().load(document.URL + ' #threads-outer #threads', function(){
-                $('#threads-outer #threads').fadeIn();
-              });
+              // //toggle_listcontrols_save_thread(threadname, 0);
+              // $('#threads-parent #threads').fadeOut();
+              // $('#threads-parent #threads').parent().load(document.URL + ' #threads-parentr #threads', function(){
+              //   $('#threads-parent #threads').fadeIn();
+              // });
             } else {
               frappe.msgprint(__("Thread was not created. <br /> " + r.exc));
             }
