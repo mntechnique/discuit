@@ -12,7 +12,7 @@ def get_context(context):
 			"thread_title": i.th_thread_title
 		})
 	context.threads = thread_post_count
-	context.no_cache = 1
+	context.no_cache = True
 	return context
 
 @frappe.whitelist()
@@ -28,8 +28,8 @@ def create_thread(thread_title, thread_categories):
      return "Thread {tid} added.".format(tid=thread.name)
 
 @frappe.whitelist()
-def save_thread(th_thread_title, th_categories):
-     thread = frappe.get_doc('Thread', th_thread_title)
+def update_thread(thread_title, thread_categories):
+     thread = frappe.get_doc('Thread', thread_title)
      thread.th_thread_title = thread_title
      thread.th_categories = thread_categories
      thread.save()

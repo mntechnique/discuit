@@ -49,7 +49,13 @@
 {% macro render_thread(thread, rowindex) %}
     <div class="row">
       <div class="col-md-10">
-        <h4>{{ thread.thread_title }}</h4>
+        <!-- <h4>{{ thread.thread_title }}</h4> -->
+        <div class="form-group">
+          <span id="{{thread.name}}-text">{{thread.thread_title}}</span>
+        </div>
+        <div class="form-group">
+          <input id="{{thread.name}}-input-text" value="{{thread.thread_title}}" class="form-control hide"/>
+        </div>
         <ul class="list-inline">
           <li class="list-inline-item">
             <div class="label label-info">FIPS</div>
@@ -72,17 +78,42 @@
         <div>{{ "3H" }}</div>
       </div>
     </div>
-    <hr>    
+    <div class="col-xs-12 text-right">
+      <div id="{{thread.name}}-buttons" class="btn-group btn-group-xs">
+        <!-- display:none, because jquery.toggle is used to show/hide elements. -->
+        {% if session_user_type != "Website User" %}
+        <button id="{{thread.name}}-edit-thread" class="btn" style="display:block" data-thread-key="{{thread.name}}">
+          <i class="octicon octicon-pencil"></i>
+        </button>
+        {% endif %}
+        <button id="{{thread.name}}-save-edit-thread" class="btn btn-success hide" data-thread-key="{{thread.name}}">
+          <i class="octicon octicon-check"></i>Save
+        </button>
+        <button id="{{thread.name}}-cancel-edit-thread" class="btn hide" data-thread-key="{{thread.name}}">
+          <i class="octicon octicon-x"></i>Cancel
+        </button>
+      </div>
+    </div>
+        
 {% endmacro %}
 
 <div id="threads-parent">
   <div id="threads">
-  <!-- {{ threads }} -->
-  {% for t in threads %}
-    {{ render_thread(t, 0) }}
-  {% endfor %}
+    {% set threadindex = 0 %}
+    {% for thread in threads %}
+        {% set threadindex = threadindex + 1 %}
+        {{ render_thread(thread, threadindex) }}
+    {% endfor %}
+    {% if not threads %}
+      <br>
+      <div class="text-center text-muted">
+        <h4>No Threads have been added yet.</h4>
+        <i class="mega-octicon octicon-telescope"></i>
+      </div>
+    {% endif %}
   </div>
 </div>
+
 
 
 <script type="text/javascript">
@@ -95,25 +126,27 @@
     }
 
     wireup_datepickers();
-    
-    function toggle_listcontrols_save_thread(threadname, editmode) {
-      var th_save = $('#' + threadname + '-save-thread');
-      var th_cancel = $('#' + threadname + '-cancel-thread');
-        if(editmode == 1) {
-          th_save.removeClass('hide'); 
-          th_cancel.removeClass('hide');
-        } 
-        else {
-          th_save.addClass('hide'); 
-          th_cancel.addClass('hide');
-        }
+
+    function toggle_buttons_edit_thread(threadname, editmode) {
+      var btn_edit_thread = $('#' + threadname + '-edit-thread');
+      var btn_save_thread = $('#' + threadname + '-save-edit-thread');
+      var btn_cancel_edit_thread = $('#' + threadname + '-cancel-edit-thread');
+
+      if(editmode == 1) {
+        btn_edit_thread.addClass('hide');
+        btn_save_thread.removeClass('hide'); 
+        btn_cancel_edit_thread.removeClass('hide');
+      } 
+      else {
+        btn_edit_thread.removeClass('hide');
+        btn_save_thread.addClass('hide'); 
+        btn_cancel_edit_thread.addClass('hide');
+      }
     }
       
     $('#create-thread').click(function(event){
         var title = $('#new-thread-title');
         var categories = $('#new-thread-categories');
-        // console.log(title);
-        // console.log(categories);
         frappe.call({
           method: "discuit.www.threads.create_thread",
           args: {
@@ -124,62 +157,91 @@
           freeze_message: __("Creating thread..."),
           callback: function(r){
             if(!r.exc) {
-              //frappe.msgprint(__(r.message));
-              //refresh_threads();
-
               $('#newthread').removeClass('in'); //to collapse container.collapse();
               mnt.refresh_page_element('#threads-parent #threads', 1, function() {
                 wireup_datepickers();
               });
               mnt.show_alert(__("New thread " + title + " added."), 5)
-              // title.val(''); 
-              // title.addClass('hide');
-              // categories.val(''); 
-              // categories.addClass('hide');
-              // //toggle_listcontrols_save_thread(threadname, 0);
-              // $('#threads-parent #threads').fadeOut();
-              // $('#threads-parent #threads').parent().load(document.URL + ' #threads-parentr #threads', function(){
-              //   $('#threads-parent #threads').fadeIn();
-              // });
             } else {
               frappe.msgprint(__("Thread was not created. <br /> " + r.exc));
             }
           }
         });
       });
-    // $('#threads').on('click', '[data-role="save-thread"]', function() {
-    //   var threadname = $(this).attr('data-thread-key'); //Get context of Thread.
-    //   var input_title = $('#' + threadname + '-new-thread-title');
-    //   var input_categories = $('#' + threadname + '-new-thread-categories');
 
-    //   frappe.call({
-    //     method: "discuit.www.threads.save_thread",
-    //     args: {
-    //         "thread_title": input_title.val(),
-    //         "thread_categories": input_categories.val()
-    //     },
-    //     freeze: true,
-    //     freeze_message: __("Save thread..."),
-    //     callback: function(r){
-    //       if(!r.exc) {
-    //         input_title.val(''); 
-    //         input_title.addClass('hide');
-    //         input_categories.val(''); 
-    //         input_categories.addClass('hide');
-    //         toggle_listcontrols_save_thread(threadname, 0);
+
+    //edit thread
+    $('#threads-parent').on('click', '[id$="edit-thread"]', function() {
+      var threadname = $(this).attr('data-thread-key'); //Get context of Thread.
+
+      //frappe.msgprint(threadname);
+      var input_title = $('#' + threadname + '-text');
+      var input_categories = $('#' + threadname + '-input-text');
+      
+      input_title.removeClass("hide");
+      input_categories.parent().removeClass('hide')
+
+      //Set values in Selectize input from labels.
+      // label_categories = [];
+      // $('div[id="' + threadname + '-categories"] span').each(function () {
+      //   var slug = $(this).attr('data-slug');
+      //   label_categories.push(slug);
+      // });
+
+      // get_categories_and_init_selectize('#' + input_thread_categories.attr("id"), false, label_categories);
+      // //input_thread_categories[0].selectize.unlock();
+
+      // //input_thread_categories[0].selectize.setValue(value_selectize);
+
+      input_categories.parent().removeClass('hide');
+       
+      toggle_buttons_edit_thread(threadname, 1);
+
+    });
+
+    // Cancel edited thread
+    $('#threads-parent').on('click', '[id$="cancel-edit-thread"]', function() {
+      var threadname = $(this).attr('data-thread-key'); 
+      var input_title = $('#' + threadname + '-text');
+      var input_categories = $('#' + threadname + '-input-text');
+      input_title.val('');
+      input_title.addClass('hide');
+      input_categories.val('');
+      input_categories.parent().addClass('hide');
+      toggle_buttons_edit_thread(threadname, 0);
+    });
+
+    // Save edited thread
+    $('#threads').on('click', '[data-role="save-edit-thread"]', function() {
+      var threadname = $(this).attr('data-thread-key'); //Get context of Thread.
+      var input_title = $('#' + threadname + '-text');
+      var input_categories = $('#' + threadname + '-input-text');
+
+      frappe.call({
+        method: "discuit.www.threads.update_thread",
+        args: {
+            "thread_title": input_title.val(),
+            "thread_categories": input_categories.val()
+        },
+        freeze: true,
+        freeze_message: __("Updatating thread..."),
+        callback: function(r){
+          if(!r.exc) { 
+            input_title.addClass('hide');
+            input_categories.addClass('hide');
+            toggle_buttons_edit_thread(threadname, 0);
           
-    //         //refresh_threads();
-    //         $('#threads #' + threadname + '-new-thread-title').fadeOut();
-    //         $('#threads #' + threadname + '-new-thread-title').load(document.URL +  '#threads #' + threadname + '-new-thread-title', function() {
-    //           $('#threads #' + threadname + '-new-thread-title').fadeIn();
-    //         });
-    //         //location.reload();
-    //       } else {
-    //         frappe.msgprint(__("Thread was not save. <br /> " + r.exc));
-    //       }
-    //     }
-    //   }); 
-    // });
+            //refresh_threads();
+            mnt.refresh_page_element('#threads #' + threadname + '-text');
+            mnt.refresh_page_element('#threads #' + threadname + '-input-text');
+            //location.reload();
+          } 
+          else {
+            frappe.msgprint(__("Thread was not update. <br /> " + r.exc));
+          }
+        }
+      }); 
+    });
   });
 
 </script>
