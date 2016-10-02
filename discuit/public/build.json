@@ -4,5 +4,11 @@
 	],
 	"css/mnt.css": [
 		"public/css/mnt.css"
+	],
+	"js/selectize.js": [
+		"public/js/selectize.js"
+	],
+	"css/selectize.css": [
+		"public/css/selectize.css"
 	]
 }

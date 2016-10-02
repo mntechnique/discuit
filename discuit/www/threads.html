@@ -1,44 +1,59 @@
 {% extends "templates/web.html" %}
+<!-- {% block style %}
+     <style>
+      @media all and (max-width:480px) {
+        .btn-block-xs-only { width: 100%; display:block; }
+      }
+
+     </style>
+{% endblock %}
+{% block base_scripts %}
+<script type="text/javascript"
+    src="/assets/frappe/js/lib/jquery/jquery.min.js"></script>
+  <script type="text/javascript"
+    src="/assets/frappe/js/lib/jquery/jquery-ui.min.js"></script>
+  <script type="text/javascript"
+    src="/assets/js/frappe-web.min.js"></script>
+{% endblock %} -->
 {% block page_content %}
-<div class="row">
-  <div class="col-md-2">
-    <div class="form-group">
-      <a class="btn btn-block btn-primary" data-toggle ="collapse" data-target="#newthread">New</a>
+<div>
+  <div class="row">
+    <div class="col-md-2">
+      <div class="form-group">
+        <button id="open-new-thread" class="btn btn-primary btn-block-xs-only" data-toggle ="collapse" data-target="#newthread">New Thread</button>
+      </div>
     </div>
-  </div>
-  <div class="col-md-10">
-    <div class="form-group">
-      <div class="input-group">
-        <input type="text" placeholder="Search forums" class="form-control">
-        <span class="input-group-btn">
-          <button class="btn btn-default" type="button">Search</button>
-        </span>
+    <div class="col-md-10">
+      <div class="form-group">
+        <div class="input-group">
+          <input id="filters-selectize" type="text" placeholder="Search forums" class="form-control">
+          <span class="input-group-btn">
+            <button class="btn btn-default" type="button">Search</button>
+          </span>
+        </div>
       </div>
     </div>
   </div>
+  <div class="padding"></div>
+    <div class="row collapse" id="newthread">
+      <div class="col-md-12">
+        <div class="form">
+            <div class="form-group">
+                  <input id="new-thread-title" class="form-control" type="text" placeholder="Enter Title text for thread...">
+            </div>
+            <div class="form-group">
+                  <input id="new-thread-categories" class="form-control" type="text" placeholder="Enter Categories (Tags)">
+            </div>
+            <div class="form-group text-right">
+              <div class="btn-group btn-group-xs">
+                <button id="create-thread" class="btn btn-primary">Save</button>
+                <button id="cancel-thread" data-toggle="collapse" data-target="#newthread" class="btn btn-danger">Cancel</button>
+              </div>
+            </div>
+        </div>
+      </div>
+    </div> 
 </div>
-<div class="row collapse" id="newthread">
-  <div class="col-md-12">
-    <div class="form">
-        <div class="form-group">
-              <input id="new-thread-title" class="form-control" type="text" placeholder="Enter Title text for thread...">
-        </div>
-        <div class="form-group">
-              <input id="new-thread-categories" class="form-control" type="text" placeholder="Enter Categories (Tags)">
-        </div>
-        <div class="form-group text-right">
-          <ul class="list-inline">
-            <li>
-              <a class="btn btn-default" id="create-thread" data-role="save-thread" data-thread-key="btnsave">Save</a>
-            </li>
-            <li>
-              <a class="btn btn-default" id="cancel-thread" data-toggle ="collapse" data-target="#newthread">Cancel</a>
-            </li>
-          </ul>
-        </div>
-    </div>
-  </div>
-</div> 
 <div class="row">
   <div class="col-md-10 hidden-sm hidden-xs">Threads</div>
   <div class="col-md-1 hidden-sm hidden-xs">Replies</div>
@@ -47,38 +62,62 @@
 <hr>
 
 {% macro render_thread(thread, rowindex) %}
-    <div class="row">
-      <div class="col-md-10">
-        <!-- <h4>{{ thread.thread_title }}</h4> -->
-        <div class="form-group">
-          <span id="{{thread.name}}-text">{{thread.thread_title}}</span>
-        </div>
-        <div class="form-group">
-          <input id="{{thread.name}}-input-text" value="{{thread.thread_title}}" class="form-control hide"/>
-        </div>
-        <ul class="list-inline">
+  <!-- <div id="{{thread.name}}-panel" class="panel panel-default">
+    <div id="{{thread.name}}-panel-heading" class="panel-heading" data-thread-key="{{thread.name}}"> -->
+  <div class="row">
+    <div class="col-md-10">
+      <!-- <h4>{{ thread.thread_title }}</h4> -->
+      <div class="form-group">
+        <span id="{{thread.name}}-text">{{thread.thread_title}}</span>
+      </div>
+      <div class="form-group">
+        <input id="{{thread.name}}-input-text" value="{{thread.thread_title}}" class="form-control hide"/>
+      </div>
+      <!-- <div class="hide">
+        <input id="{{thread.name}}-input-categories" value="{{thread.thread_category}}" class="form-control hide"/>
+      </div> -->
+        <!-- <ul class="list-inline">
           <li class="list-inline-item">
-            <div class="label label-info">FIPS</div>
+            <div>
+              {% for category in thread.thread_category.split('+') %}
+                {% if category  %}
+                    <span class="label label-info">
+                    {{ frappe.db.get_value('Forum Category',filters={'category_slug': category},fieldname = 'category_name') }}
+                    </span> &nbsp;
+                {% endif %}
+              {% endfor %}
+            </div>
           </li>
-          <li class="list-inline-item">
-            <div class="label label-info">FIPS 140</div>
-          </li>
-        </ul>
-      </div>
-      <div class="col-md-1 col-xs-6">
-        <div class="hidden-md hidden-lg">
-          <strong>Replies</strong>
-        </div>
-        <div>{{ thread.post_count }}</div>
-      </div>
-      <div class="col-md-1 col-xs-6 text-right">
-        <div class="hidden-md hidden-lg">
-          <strong>Activity</strong>
-        </div>
-        <div>{{ "3H" }}</div>
-      </div>
+        </ul> -->
     </div>
-    <div class="col-xs-12 text-right">
+    <div class="col-md-1 col-xs-6">
+      <div>{{ thread.post_count }}</div>
+    </div>
+    <div class="col-md-1 col-xs-6 text-right">
+      <div>{{ "3H" }}</div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-xs-10">
+      <div>
+        <input id="{{thread.name}}-input-categories" value="{{thread.thread_category}}" class="form-control hide"/>
+      </div>
+      <ul class="list-inline">
+        <li class="list-inline-item">
+          <div>
+            {% for category in thread.thread_category.split('+') %}
+              {% if category  %}
+                  <span data-slug="{{category}}" class="label label-info">
+                  {{ frappe.db.get_value('Forum Category',filters={'category_slug': category},fieldname = 'category_name') }}
+                  </span> &nbsp;
+              {% endif %}
+            {% endfor %}
+          </div>
+        </li>
+      </ul>
+    </div>
+    <div class="col-xs-2 text-right">
       <div id="{{thread.name}}-buttons" class="btn-group btn-group-xs">
         <!-- display:none, because jquery.toggle is used to show/hide elements. -->
         {% if session_user_type != "Website User" %}
@@ -94,7 +133,9 @@
         </button>
       </div>
     </div>
-        
+  </div>
+<!--     </div>
+</div> -->
 {% endmacro %}
 
 <div id="threads-parent">
@@ -114,8 +155,6 @@
   </div>
 </div>
 
-
-
 <script type="text/javascript">
   frappe.ready(function(){
 
@@ -126,6 +165,33 @@
     }
 
     wireup_datepickers();
+
+    function get_categories_and_init_selectize(inputcontrolname, locked=false, init_value=null) {
+      frappe.call({
+        method: "discuit.www.threads.get_thread_categories",
+        callback: function(r){
+          if(!r.exc) {
+            s = $(inputcontrolname).selectize({
+              plugins: ['remove_button'],
+              delimiter: '+',
+              persist: false,
+              create: false,
+              options: r.message
+            });
+
+            if (locked) { s[0].selectize.lock(); }
+
+            if (init_value) { s[0].selectize.setValue(init_value) }
+
+          } else {
+            frappe.msgprint(__("Categories could not be fetched.<br /> " + r.exc));
+          }
+        }
+      });
+    }
+    // categories_from_url = mnt.get_url_param('categories');
+    // get_categories_and_init_selectize('#filters-selectize', false, categories_from_url);
+
 
     function toggle_buttons_edit_thread(threadname, editmode) {
       var btn_edit_thread = $('#' + threadname + '-edit-thread');
@@ -151,7 +217,7 @@
           method: "discuit.www.threads.create_thread",
           args: {
               "thread_title": title.val(),
-              "thread_categories": categories.val()
+              "thread_category": categories.val()
           },
           freeze: true,
           freeze_message: __("Creating thread..."),
@@ -159,7 +225,7 @@
             if(!r.exc) {
               $('#newthread').removeClass('in'); //to collapse container.collapse();
               mnt.refresh_page_element('#threads-parent #threads', 1, function() {
-                wireup_datepickers();
+                // wireup_datepickers();
               });
               mnt.show_alert(__("New thread " + title + " added."), 5)
             } else {
@@ -173,28 +239,29 @@
     //edit thread
     $('#threads-parent').on('click', '[id$="edit-thread"]', function() {
       var threadname = $(this).attr('data-thread-key'); //Get context of Thread.
-
+      var span_thread_text = $('#' + threadname + '-text');
       //frappe.msgprint(threadname);
-      var input_title = $('#' + threadname + '-text');
-      var input_categories = $('#' + threadname + '-input-text');
+      var input_title = $('#' + threadname + '-input-text');
+      var input_categories = $('#' + threadname + '-input-categories');
       
+      span_thread_text.addClass("hide");
       input_title.removeClass("hide");
-      input_categories.parent().removeClass('hide')
+      input_categories.removeClass('hide');
 
       //Set values in Selectize input from labels.
-      // label_categories = [];
-      // $('div[id="' + threadname + '-categories"] span').each(function () {
-      //   var slug = $(this).attr('data-slug');
-      //   label_categories.push(slug);
-      // });
+      label_categories = [];
+      $('div[id="' + threadname + '-input-categories"]').each(function () {
+        var slug = $(this).attr('data-slug');
+        label_categories.push(slug);
+      });
 
-      // get_categories_and_init_selectize('#' + input_thread_categories.attr("id"), false, label_categories);
-      // //input_thread_categories[0].selectize.unlock();
+      get_categories_and_init_selectize('#' + input_categories.attr("id"), false, label_categories);
+      //input_thread_categories[0].selectize.unlock();
 
-      // //input_thread_categories[0].selectize.setValue(value_selectize);
+      //input_thread_categories[0].selectize.setValue(value_selectize);
 
-      input_categories.parent().removeClass('hide');
-       
+
+      // input_categories.parent().removeClass('hide');
       toggle_buttons_edit_thread(threadname, 1);
 
     });
@@ -202,38 +269,45 @@
     // Cancel edited thread
     $('#threads-parent').on('click', '[id$="cancel-edit-thread"]', function() {
       var threadname = $(this).attr('data-thread-key'); 
-      var input_title = $('#' + threadname + '-text');
-      var input_categories = $('#' + threadname + '-input-text');
-      input_title.val('');
+      var span_thread_text = $('#' + threadname + '-text');
+      var input_title = $('#' + threadname + '-input-text');
+      var input_categories = $('#' + threadname + '-input-categories');
+
+      span_thread_text.removeClass('hide');
       input_title.addClass('hide');
-      input_categories.val('');
-      input_categories.parent().addClass('hide');
+      input_categories.addClass('hide');
+      // input_title.val('');
+      // input_categories.val('');
       toggle_buttons_edit_thread(threadname, 0);
     });
 
     // Save edited thread
-    $('#threads').on('click', '[data-role="save-edit-thread"]', function() {
+    $('#threads-parent').on('click', '[id$="save-edit-thread"]', function() {
       var threadname = $(this).attr('data-thread-key'); //Get context of Thread.
-      var input_title = $('#' + threadname + '-text');
-      var input_categories = $('#' + threadname + '-input-text');
+      var span_thread_text = $('#' + threadname + '-text');
+      var input_title = $('#' + threadname + '-input-text');
+      var input_categories = $('#' + threadname + '-input-categories');
 
       frappe.call({
         method: "discuit.www.threads.update_thread",
         args: {
+            "thread_id": threadname,
             "thread_title": input_title.val(),
-            "thread_categories": input_categories.val()
+            "thread_category": input_categories.val()
         },
         freeze: true,
         freeze_message: __("Updatating thread..."),
         callback: function(r){
           if(!r.exc) { 
+            span_thread_text.removeClass('hide');
             input_title.addClass('hide');
-            input_categories.addClass('hide');
+            input_categories.parent().addClass('hide');
+
             toggle_buttons_edit_thread(threadname, 0);
           
             //refresh_threads();
-            mnt.refresh_page_element('#threads #' + threadname + '-text');
             mnt.refresh_page_element('#threads #' + threadname + '-input-text');
+            mnt.refresh_page_element('#threads #' + threadname + '-input-categories');
             //location.reload();
           } 
           else {
