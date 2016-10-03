@@ -28,7 +28,7 @@
         <div class="input-group">
           <input id="filters-selectize" type="text" placeholder="Search forums" class="form-control">
           <span class="input-group-btn">
-            <button class="btn btn-default" type="button">Search</button>
+            <button id="filter-threads" class="btn btn-default" type="button">Search</button>
           </span>
         </div>
       </div>
@@ -105,11 +105,12 @@
       </div>
       <ul class="list-inline">
         <li class="list-inline-item">
-          <div>
+          <div id="{{thread.name}}-categories">
             {% for category in thread.thread_category.split('+') %}
               {% if category  %}
                   <span data-slug="{{category}}" class="label label-info">
-                  {{ frappe.db.get_value('Forum Category',filters={'category_slug': category},fieldname = 'category_name') }}
+                 <!--  {{ frappe.db.get_value('Forum Category',filters={'category_slug': category},fieldname = 'category_name') }} -->
+                 {{  category }}
                   </span> &nbsp;
               {% endif %}
             {% endfor %}
@@ -189,6 +190,10 @@
         }
       });
     }
+
+    // $('.page_content').on('click', '#open-new-thread', function() {
+    //    get_categories_and_init_selectize('#new-thread-categories');
+    // });
     // categories_from_url = mnt.get_url_param('categories');
     // get_categories_and_init_selectize('#filters-selectize', false, categories_from_url);
 
@@ -197,6 +202,7 @@
       var btn_edit_thread = $('#' + threadname + '-edit-thread');
       var btn_save_thread = $('#' + threadname + '-save-edit-thread');
       var btn_cancel_edit_thread = $('#' + threadname + '-cancel-edit-thread');
+
 
       if(editmode == 1) {
         btn_edit_thread.addClass('hide');
@@ -243,9 +249,11 @@
       //frappe.msgprint(threadname);
       var input_title = $('#' + threadname + '-input-text');
       var input_categories = $('#' + threadname + '-input-categories');
+      var div_thread_categories = $('#' + threadname + '-categories');
       
       span_thread_text.addClass("hide");
       input_title.removeClass("hide");
+      div_thread_categories.addClass("hide");
       input_categories.removeClass('hide');
 
       //Set values in Selectize input from labels.
@@ -255,7 +263,7 @@
         label_categories.push(slug);
       });
 
-      get_categories_and_init_selectize('#' + input_categories.attr("id"), false, label_categories);
+      // get_categories_and_init_selectize('#' + input_categories.attr("id"), false, label_categories);
       //input_thread_categories[0].selectize.unlock();
 
       //input_thread_categories[0].selectize.setValue(value_selectize);
@@ -272,10 +280,13 @@
       var span_thread_text = $('#' + threadname + '-text');
       var input_title = $('#' + threadname + '-input-text');
       var input_categories = $('#' + threadname + '-input-categories');
+      var div_thread_categories = $('#' + threadname + '-categories');
+
 
       span_thread_text.removeClass('hide');
       input_title.addClass('hide');
       input_categories.addClass('hide');
+      div_thread_categories.removeClass('hide');
       // input_title.val('');
       // input_categories.val('');
       toggle_buttons_edit_thread(threadname, 0);
@@ -287,6 +298,7 @@
       var span_thread_text = $('#' + threadname + '-text');
       var input_title = $('#' + threadname + '-input-text');
       var input_categories = $('#' + threadname + '-input-categories');
+      var div_thread_categories = $('#' + threadname + '-categories');
 
       frappe.call({
         method: "discuit.www.threads.update_thread",
@@ -301,13 +313,14 @@
           if(!r.exc) { 
             span_thread_text.removeClass('hide');
             input_title.addClass('hide');
-            input_categories.parent().addClass('hide');
+            input_categories.addClass('hide');
+            div_thread_categories.removeClass('hide');
 
             toggle_buttons_edit_thread(threadname, 0);
           
             //refresh_threads();
-            mnt.refresh_page_element('#threads #' + threadname + '-input-text');
-            mnt.refresh_page_element('#threads #' + threadname + '-input-categories');
+            mnt.refresh_page_element('#threads #' + threadname + '-text');
+            mnt.refresh_page_element('#threads #' + threadname + '-categories');
             //location.reload();
           } 
           else {
