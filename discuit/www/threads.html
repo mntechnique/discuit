@@ -69,10 +69,28 @@
       <!-- <h4>{{ thread.thread_title }}</h4> -->
       <div class="form-group">
         <span id="{{thread.name}}-text">{{thread.thread_title}}</span>
+        <a id="{{thread.name}}-edit-thread" data-thread-key="{{thread.name}}"><i class="icon icon-pencil" style="text-decoration:none;"></i></a>
       </div>
       <div class="form-group">
         <input id="{{thread.name}}-input-text" value="{{thread.thread_title}}" class="form-control hide"/>
       </div>
+      <div>
+        <input id="{{thread.name}}-input-categories" value="{{thread.thread_category}}" class="form-control hide"/>
+      </div>
+      <ul class="list-inline">
+        <li class="list-inline-item">
+          <div id="{{thread.name}}-categories">
+            {% for category in thread.thread_category.split('+') %}
+              {% if category  %}
+                  <span data-slug="{{category}}" class="label label-info">
+                 <!--  {{ frappe.db.get_value('Forum Category',filters={'category_slug': category},fieldname = 'category_name') }} -->
+                 {{  category }}
+                  </span> &nbsp;
+              {% endif %}
+            {% endfor %}
+          </div>
+        </li>
+      </ul>
       <!-- <div class="hide">
         <input id="{{thread.name}}-input-categories" value="{{thread.thread_category}}" class="form-control hide"/>
       </div> -->
@@ -99,7 +117,7 @@
   </div>
 
   <div class="row">
-    <div class="col-xs-10">
+  <!--   <div class="col-xs-10">
       <div>
         <input id="{{thread.name}}-input-categories" value="{{thread.thread_category}}" class="form-control hide"/>
       </div>
@@ -109,7 +127,7 @@
             {% for category in thread.thread_category.split('+') %}
               {% if category  %}
                   <span data-slug="{{category}}" class="label label-info">
-                 <!--  {{ frappe.db.get_value('Forum Category',filters={'category_slug': category},fieldname = 'category_name') }} -->
+                  {{ frappe.db.get_value('Forum Category',filters={'category_slug': category},fieldname = 'category_name') }}
                  {{  category }}
                   </span> &nbsp;
               {% endif %}
@@ -117,15 +135,15 @@
           </div>
         </li>
       </ul>
-    </div>
-    <div class="col-xs-2 text-right">
+    </div> -->
+    <div class="col-xs-2">
       <div id="{{thread.name}}-buttons" class="btn-group btn-group-xs">
         <!-- display:none, because jquery.toggle is used to show/hide elements. -->
-        {% if session_user_type != "Website User" %}
-        <button id="{{thread.name}}-edit-thread" class="btn" style="display:block" data-thread-key="{{thread.name}}">
+        <!-- {% if session_user_type != "Website User" %}
+        <button id="{{thread.name}}-edit-thread" data-thread-key="{{thread.name}}">
           <i class="octicon octicon-pencil"></i>
         </button>
-        {% endif %}
+        {% endif %} -->
         <button id="{{thread.name}}-save-edit-thread" class="btn btn-success hide" data-thread-key="{{thread.name}}">
           <i class="octicon octicon-check"></i>Save
         </button>
