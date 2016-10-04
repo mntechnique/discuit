@@ -14,7 +14,7 @@ def get_context(context):
 			"thread_category":i.th_categories
 		})
 	context.threads = thread_post_count
-	context.no_cache = True
+	context.no_cache = 1
 	return context
 
 @frappe.whitelist()
