@@ -55,17 +55,22 @@
     </div> 
 </div>
 <div class="row">
-  <div class="col-md-10 hidden-sm hidden-xs">Threads</div>
+  <div class="col-md-11 hidden-sm hidden-xs">Threads</div>
   <div class="col-md-1 hidden-sm hidden-xs">Replies</div>
-  <div class="col-md-1 hidden-sm hidden-xs">Activity</div>
 </div>
 <hr>
-
+<!-- {% macro render_post(threadname, post, rowindex) %}
+  <div class="row">
+    <div class="col-md-1 col-xs-6 text-right">
+      <div>{{ post.pst_posted_on }}</div>
+    </div>
+  </div>
+{% endmacro %} -->
 {% macro render_thread(thread, rowindex) %}
   <!-- <div id="{{thread.name}}-panel" class="panel panel-default">
     <div id="{{thread.name}}-panel-heading" class="panel-heading" data-thread-key="{{thread.name}}"> -->
   <div class="row">
-    <div class="col-md-10">
+    <div class="col-md-11">
       <!-- <h4>{{ thread.thread_title }}</h4> -->
       <div class="form-group">
         <span id="{{thread.name}}-text">{{thread.thread_title}}</span>
@@ -76,6 +81,9 @@
       </div>
       <div>
         <input id="{{thread.name}}-input-categories" value="{{thread.thread_category}}" class="form-control hide"/>
+      </div>
+      <div>
+        <span class="text-muted">Last Activity :</span>{{ thread.last_post_on }}
       </div>
       <ul class="list-inline">
         <li class="list-inline-item">
@@ -108,11 +116,8 @@
           </li>
         </ul> -->
     </div>
-    <div class="col-md-1 col-xs-6">
-      <div>{{ thread.post_count }}</div>
-    </div>
-    <div class="col-md-1 col-xs-6 text-right">
-      <div>{{ "3H" }}</div>
+    <div class="col-md-1 col-xs-12">
+      <span class="text-muted">{{ thread.post_count }}</span><span class="text-muted hidden-lg hidden-md">&nbsp;replies</span>
     </div>
   </div>
 
@@ -217,18 +222,18 @@
 
 
     function toggle_buttons_edit_thread(threadname, editmode) {
-      var btn_edit_thread = $('#' + threadname + '-edit-thread');
+      
       var btn_save_thread = $('#' + threadname + '-save-edit-thread');
       var btn_cancel_edit_thread = $('#' + threadname + '-cancel-edit-thread');
 
 
       if(editmode == 1) {
-        btn_edit_thread.addClass('hide');
+    
         btn_save_thread.removeClass('hide'); 
         btn_cancel_edit_thread.removeClass('hide');
       } 
       else {
-        btn_edit_thread.removeClass('hide');
+       
         btn_save_thread.addClass('hide'); 
         btn_cancel_edit_thread.addClass('hide');
       }
@@ -268,11 +273,13 @@
       var input_title = $('#' + threadname + '-input-text');
       var input_categories = $('#' + threadname + '-input-categories');
       var div_thread_categories = $('#' + threadname + '-categories');
+      var edit_thread = $('#' + threadname + '-edit-thread');
       
       span_thread_text.addClass("hide");
       input_title.removeClass("hide");
       div_thread_categories.addClass("hide");
       input_categories.removeClass('hide');
+      edit_thread.addClass('hide');
 
       //Set values in Selectize input from labels.
       label_categories = [];
@@ -299,12 +306,14 @@
       var input_title = $('#' + threadname + '-input-text');
       var input_categories = $('#' + threadname + '-input-categories');
       var div_thread_categories = $('#' + threadname + '-categories');
+      var edit_thread = $('#' + threadname + '-edit-thread');
 
 
       span_thread_text.removeClass('hide');
       input_title.addClass('hide');
       input_categories.addClass('hide');
       div_thread_categories.removeClass('hide');
+      edit_thread.removeClass('hide');
       // input_title.val('');
       // input_categories.val('');
       toggle_buttons_edit_thread(threadname, 0);
@@ -317,6 +326,7 @@
       var input_title = $('#' + threadname + '-input-text');
       var input_categories = $('#' + threadname + '-input-categories');
       var div_thread_categories = $('#' + threadname + '-categories');
+      var edit_thread = $('#' + threadname + '-edit-thread');
 
       frappe.call({
         method: "discuit.www.threads.update_thread",
@@ -333,12 +343,15 @@
             input_title.addClass('hide');
             input_categories.addClass('hide');
             div_thread_categories.removeClass('hide');
+            edit_thread.removeClass('hide');
 
             toggle_buttons_edit_thread(threadname, 0);
           
             //refresh_threads();
-            mnt.refresh_page_element('#threads #' + threadname + '-text');
-            mnt.refresh_page_element('#threads #' + threadname + '-categories');
+           
+            mnt.refresh_page_element('#threads #' + threadname + '-text',0);
+            // mnt.refresh_page_element('#threads #' + threadname + '-edit-thread',0);
+            mnt.refresh_page_element('#threads #' + threadname + '-categories',0);
             //location.reload();
           } 
           else {
