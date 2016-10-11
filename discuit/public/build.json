@@ -1,14 +1,23 @@
 {
+	"js/summernote.js": [
+		"public/js/summernote.js"
+	],
+	"css/summernote.css": [
+		"public/css/summernote.css"
+	],
+	"js/selectize.js": [
+		"public/js/selectize.js"
+	],
+	"css/selectize.css": [
+		"public/css/selectize.bs3.css"
+	],
 	"js/mnt.js": [
 		"public/js/mnt.js"
 	],
 	"css/mnt.css": [
 		"public/css/mnt.css"
 	],
-	"js/selectize.js": [
-		"public/js/selectize.js"
-	],
-	"css/selectize.css": [
-		"public/css/selectize.css"
+	"css/scrollup.css": [
+		"public/css/scrollup.css"
 	]
 }

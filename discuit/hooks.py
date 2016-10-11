@@ -19,8 +19,8 @@ app_license = "GPL v3"
 # app_include_js = "/assets/discuit/js/discuit.js"
 
 # include js, css files in header of web template
-web_include_css = ["/assets/css/mnt.css", "/assets/selectize.css"]
-web_include_js = ["/assets/js/mnt.js", "/assets/js/selectize.js"]
+web_include_css = ["/assets/css/summernote.css", "/assets/css/selectize.css", "/assets/css/mnt.css", "/assets/css/scrollup.css"]
+web_include_js = ["/assets/js/summernote.js", "/assets/js/selectize.js", "/assets/js/mnt.js"]
 
 # Home Pages
 # ----------
