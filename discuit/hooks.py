@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 from . import __version__ as app_version
+from frappe import _
 
 app_name = "discuit"
 app_title = "Discuit"
@@ -28,11 +29,11 @@ web_include_js = ["/assets/js/summernote.js", "/assets/js/selectize.js", "/asset
 # application home page (will override Website Settings)
 # home_page = "login"
 
+
 # website user home page (by Role)
 # role_home_page = {
 #	"Role": "home_page"
 # }
-
 # Website user home page (by function)
 # get_website_user_home_page = "discuit.utils.get_home_page"
 
@@ -63,7 +64,7 @@ web_include_js = ["/assets/js/summernote.js", "/assets/js/selectize.js", "/asset
 # }
 #
 # has_permission = {
-# 	"Event": "frappe.desk.doctype.event.event.has_permission",
+# 	"Post": "discuit.api.check_discuit_post_permissions",
 # }
 
 # Document Events
@@ -110,4 +111,3 @@ web_include_js = ["/assets/js/summernote.js", "/assets/js/selectize.js", "/asset
 # override_whitelisted_methods = {
 # 	"frappe.desk.doctype.event.event.get_events": "discuit.event.get_events"
 # }
-
