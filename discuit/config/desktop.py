@@ -7,7 +7,7 @@ def get_data():
 		{
 			"module_name": "Discuit",
 			"color": "greenyellow",
-			"icon": "icon-comment",
+			"icon": "fa fa-comment",
 			"type": "module",
 			"label": _("Discuit")
 		}
