@@ -5,7 +5,7 @@
 from __future__ import unicode_literals
 import frappe
 from frappe.model.document import Document
-from frappe.utils.nestedset import NestedSet
 
-class ForumCategory(NestedSet):
-     nsm_parent_field = 'parent_forum_category'
+class ForumCategory(Document):
+	def validate(self):
+		self.category_slug = self.category_name.lower().replace(" ", "_")

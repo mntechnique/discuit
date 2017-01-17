@@ -1,0 +1,23 @@
+.scrollbase{ 
+	border-top-left-radius:2px;
+	border-bottom-left-radius:2px;
+	width:24px; 
+	height:24px; 
+	text-align:center;
+	font-weight: bold;
+	color: #000;
+	text-decoration: none;
+	position:fixed;
+	display:none;
+	font-size:larger;
+	z-index: 1050;
+	background-color: #ccc;
+}
+.scrollToTop{
+	top:80px;
+	right:0px;
+}
+.scrollToTop:hover{
+	text-decoration:none;
+	color: #000;
+}
